@@ -1,5 +1,13 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
 import requests
+
+
+@dataclass
+class BuySell:
+    buy: float
+    sell: float
 
 
 class BaseProvider(ABC):
@@ -9,7 +17,7 @@ class BaseProvider(ABC):
         self.name = name or "BaseProvider"
 
     @abstractmethod
-    def get_rate(self) -> float:
+    def get_rate(self) -> BuySell:
         pass
 
 
@@ -23,7 +31,7 @@ class MonoProvider(BaseProvider):
         "EUR": 978,
     }
 
-    def get_rate(self):
+    def get_rate(self) -> BuySell:
         url = "https://api.monobank.ua/bank/currency"
         response = requests.get(url)
         response.raise_for_status()
@@ -32,27 +40,28 @@ class MonoProvider(BaseProvider):
 
         for currency in response.json():
             if currency["currencyCodeA"] == currency_from_code and currency["currencyCodeB"] == currency_to_code:
-                return float(currency["rateSell"])
+                value = BuySell(float(currency["rateBuy"]), float(currency["rateSell"]))
+                return value
 
 
 class PrivatProvider(BaseProvider):
     def __init__(self, currency_from: str, currency_to: str, name: str = None):
         super().__init__(currency_from, currency_to, name or "Privatbank")
 
-    def get_rate(self):
+    def get_rate(self) -> BuySell:
         url = "https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5"
         response = requests.get(url)
         response.raise_for_status()
 
         for currency in response.json():
             if currency["ccy"] == self.currency_from and currency["base_ccy"] == self.currency_to:
-                return float(currency["sale"])
+                value = BuySell(float(currency["buy"]), float(currency["sale"]))
+                return value
 
 
 if __name__ == "__main__":
     provider1 = MonoProvider("USD", "UAH")
-    # provider2 = MonoProvider("UAH", "USD")
     provider3 = PrivatProvider("USD", "UAH")
+
     print(f"Mono {provider1.currency_from} to {provider1.currency_to} = {provider1.get_rate()}")
-    # print(f"Mono {provider2.currency_from} to {provider2.currency_to} = {provider2.get_rate()}")
     print(f"Privat {provider3.currency_from} to {provider3.currency_to} = {provider3.get_rate()}")
