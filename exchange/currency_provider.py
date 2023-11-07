@@ -114,27 +114,4 @@ class VkurseProvider(BaseProvider):
         return value
 
 
-if __name__ == "__main__":
-    mono_usd = MonoProvider("USD", "UAH")
-    mono_eur = MonoProvider("EUR", "UAH")
-
-    privat_usd = PrivatProvider("USD", "UAH")
-    privat_eur = PrivatProvider("EUR", "UAH")
-
-    nbu_usd = NBUProvider("USD", "UAH")
-    nbu_eur = NBUProvider("EUR", "UAH")
-
-    vkurse_usd = VkurseProvider("USD", "UAH")
-    vkurse_eur = VkurseProvider("EUR", "UAH")
-
-    print(f"{mono_usd.name}: {mono_usd.currency_from} to {mono_usd.currency_to} = {mono_usd.get_rate()}")
-    print(f"{mono_eur.name}: {mono_eur.currency_from} to {mono_eur.currency_to} = {mono_eur.get_rate()}")
-    print()
-    print(f"{privat_usd.name}: {privat_usd.currency_from} to {privat_usd.currency_to} = {privat_usd.get_rate()}")
-    print(f"{privat_eur.name}: {privat_eur.currency_from} to {privat_eur.currency_to} = {privat_eur.get_rate()}")
-    print()
-    print(f"{nbu_usd.name}: {nbu_usd.currency_from} to {nbu_usd.currency_to} = {nbu_usd.get_rate()}")
-    print(f"{nbu_eur.name}: {nbu_eur.currency_from} to {nbu_eur.currency_to} = {nbu_eur.get_rate()}")
-    print()
-    print(f"{vkurse_usd.name}: {vkurse_usd.currency_from} to {vkurse_usd.currency_to} = {vkurse_usd.get_rate()}")
-    print(f"{vkurse_eur.name}: {vkurse_eur.currency_from} to {vkurse_eur.currency_to} = {vkurse_eur.get_rate()}")
+PROVIDERS = [MonoProvider, PrivatProvider, NBUProvider, VkurseProvider]
