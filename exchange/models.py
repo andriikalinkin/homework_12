@@ -6,6 +6,6 @@ class Rate(models.Model):
     vendor = models.CharField(max_length=55)
     currency_a = models.CharField(max_length=3)
     currency_b = models.CharField(max_length=3)
-    buy = models.DecimalField(decimal_places=4, max_digits=10, null=True)
-    sell = models.DecimalField(decimal_places=4, max_digits=10, null=True)
+    buy = models.DecimalField(decimal_places=4, max_digits=10)
+    sell = models.DecimalField(decimal_places=4, max_digits=10)
     date = models.DateField()
