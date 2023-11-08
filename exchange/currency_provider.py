@@ -7,8 +7,8 @@ import requests
 
 @dataclass
 class BuySell:
-    buy: Union[float, None]
-    sell: Union[float, None]
+    buy: float
+    sell: float
 
 
 class BaseProvider(ABC):
@@ -18,7 +18,7 @@ class BaseProvider(ABC):
         self.name = name or "BaseProvider"
 
     @abstractmethod
-    def get_rate(self) -> BuySell:
+    def get_rate(self) -> Union[BuySell, None]:
         pass
 
     def handle_error(self, error):
@@ -44,7 +44,7 @@ class MonoProvider(BaseProvider):
         "EUR": 978,
     }
 
-    def get_rate(self) -> BuySell:
+    def get_rate(self) -> Union[BuySell, None]:
         url = "https://api.monobank.ua/bank/currency"
         response = self.fetch_data(url)
 
@@ -56,15 +56,14 @@ class MonoProvider(BaseProvider):
                 if currency["currencyCodeA"] == currency_from_code and currency["currencyCodeB"] == currency_to_code:
                     value = BuySell(float(currency["rateBuy"]), float(currency["rateSell"]))
                     return value
-        value = BuySell(None, None)
-        return value
+        return None
 
 
 class PrivatProvider(BaseProvider):
     def __init__(self, currency_from: str, currency_to: str, name: str = None):
         super().__init__(currency_from, currency_to, name or "PrivatBank")
 
-    def get_rate(self) -> BuySell:
+    def get_rate(self) -> Union[BuySell, None]:
         url = "https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5"
         response = self.fetch_data(url)
 
@@ -73,15 +72,14 @@ class PrivatProvider(BaseProvider):
                 if currency["ccy"] == self.currency_from and currency["base_ccy"] == self.currency_to:
                     value = BuySell(float(currency["buy"]), float(currency["sale"]))
                     return value
-        value = BuySell(None, None)
-        return value
+        return None
 
 
 class NBUProvider(BaseProvider):
     def __init__(self, currency_from: str, currency_to: str, name: str = None):
         super().__init__(currency_from, currency_to, name or "NationalBankOfUkraine")
 
-    def get_rate(self) -> BuySell:
+    def get_rate(self) -> Union[BuySell, None]:
         url = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
         response = self.fetch_data(url)
 
@@ -90,15 +88,14 @@ class NBUProvider(BaseProvider):
                 if currency["cc"] == self.currency_from:
                     value = BuySell(float(currency["rate"]), float(currency["rate"]))
                     return value
-        value = BuySell(None, None)
-        return value
+        return None
 
 
 class VkurseProvider(BaseProvider):
     def __init__(self, currency_from: str, currency_to: str, name: str = None):
         super().__init__(currency_from, currency_to, name or "VkurseDpUa")
 
-    def get_rate(self) -> BuySell:
+    def get_rate(self) -> Union[BuySell, None]:
         url = "https://vkurse.dp.ua/course.json"
         response = self.fetch_data(url)
 
@@ -110,8 +107,12 @@ class VkurseProvider(BaseProvider):
             elif self.currency_from == "EUR":
                 value = BuySell(float(response.json()["Euro"]["buy"]), float(response.json()["Euro"]["sale"]))
             return value
-        value = BuySell(None, None)
-        return value
+        return None
 
 
-PROVIDERS = [MonoProvider, PrivatProvider, NBUProvider, VkurseProvider]
+PROVIDERS = [
+    MonoProvider,
+    PrivatProvider,
+    NBUProvider,
+    VkurseProvider,
+]
