@@ -12,7 +12,7 @@ class BuySell:
 
 
 class BaseProvider(ABC):
-    def __init__(self, currency_from: str, currency_to: str,  name: str = None):
+    def __init__(self, currency_from: str, currency_to: str, name: str = None):
         self.currency_from = currency_from.upper()
         self.currency_to = currency_to.upper()
         self.name = name or "BaseProvider"
@@ -53,8 +53,13 @@ class MonoProvider(BaseProvider):
             currency_to_code = self.iso_codes[self.currency_to]
 
             for currency in response.json():
-                if currency["currencyCodeA"] == currency_from_code and currency["currencyCodeB"] == currency_to_code:
-                    value = BuySell(float(currency["rateBuy"]), float(currency["rateSell"]))
+                if (
+                    currency["currencyCodeA"] == currency_from_code
+                    and currency["currencyCodeB"] == currency_to_code
+                ):
+                    value = BuySell(
+                        float(currency["rateBuy"]), float(currency["rateSell"])
+                    )
                     return value
         return None
 
@@ -69,7 +74,10 @@ class PrivatProvider(BaseProvider):
 
         if response:
             for currency in response.json():
-                if currency["ccy"] == self.currency_from and currency["base_ccy"] == self.currency_to:
+                if (
+                    currency["ccy"] == self.currency_from
+                    and currency["base_ccy"] == self.currency_to
+                ):
                     value = BuySell(float(currency["buy"]), float(currency["sale"]))
                     return value
         return None
@@ -103,9 +111,15 @@ class VkurseProvider(BaseProvider):
             value = False
 
             if self.currency_from == "USD":
-                value = BuySell(float(response.json()["Dollar"]["buy"]), float(response.json()["Dollar"]["sale"]))
+                value = BuySell(
+                    float(response.json()["Dollar"]["buy"]),
+                    float(response.json()["Dollar"]["sale"]),
+                )
             elif self.currency_from == "EUR":
-                value = BuySell(float(response.json()["Euro"]["buy"]), float(response.json()["Euro"]["sale"]))
+                value = BuySell(
+                    float(response.json()["Euro"]["buy"]),
+                    float(response.json()["Euro"]["sale"]),
+                )
             return value
         return None
 

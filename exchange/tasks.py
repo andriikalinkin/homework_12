@@ -5,14 +5,13 @@ from celery import shared_task
 from .currency_provider import PROVIDERS
 from .models import Rate
 
-
 CURRENCIES_LIST = [
     "USD",
     "EUR",
 ]
 
 
-# @shared_task
+@shared_task
 def pull_rate():
     for provider_class in PROVIDERS:
         for currency in CURRENCIES_LIST:
@@ -25,7 +24,7 @@ def pull_rate():
                 currency_b="UAH",
                 buy=provider_rate.buy,
                 sell=provider_rate.sell,
-                date=date.today()
+                date=date.today(),
             )
 
             if is_created:
