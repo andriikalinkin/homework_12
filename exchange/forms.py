@@ -1,5 +1,7 @@
 from django import forms
 
+from .models import Rate
+
 
 class CalculatorForm(forms.Form):
     CURRENCY_CHOICES = [
@@ -7,10 +9,9 @@ class CalculatorForm(forms.Form):
         ("EUR", "EUR"),
     ]
 
-    value = forms.DecimalField(label="сумма", min_value=0)
-    currency_a = forms.ChoiceField(label="из валюты", choices=CURRENCY_CHOICES)
-    currency_b = forms.CharField(
-        label="в валюту",
-        initial="UAH",
-        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    value = forms.DecimalField(label="Amount", min_value=0)
+    currency_a = forms.ChoiceField(label="Which currency should be converted to UAH", choices=CURRENCY_CHOICES)
+    date = forms.DateField(
+        label="Select exchange rate date",
+        widget=forms.TextInput(attrs={'type': 'date'}),
     )

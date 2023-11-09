@@ -31,14 +31,28 @@ def calculator(request):
         if form.is_valid():
             value = form.cleaned_data["value"]
             currency_a = form.cleaned_data["currency_a"]
+            date = form.cleaned_data["date"]
 
-            best_rate = Rate.objects.filter(
-                currency_a=currency_a
-            ).order_by("sell").first()
+            try:
+                user_date = Rate.objects.filter(date=date, currency_a=currency_a).order_by("sell").first()
+                converted_value = value * user_date.sell
+                return HttpResponse(f"{value} {currency_a} = {converted_value} UAH")
+            except AttributeError:
+                last_date = Rate.objects.filter(currency_a=currency_a).order_by("-date", "sell").first()
+                converted_value = value * last_date.sell
+                return HttpResponse(
+                    f"There is no currency data available for the requested date!<br>"
+                    f"Here is the best result from the latest database update ({last_date.date}):<br>"
+                    f"{value} {currency_a} = {converted_value} UAH"
+                )
 
-            if best_rate:
-                converted_value = value * best_rate.sell
-                return HttpResponse(f"{value} {currency_a} = {round(converted_value, 2)} UAH")
+            # best_rate = Rate.objects.filter(
+            #     currency_a=currency_a
+            # ).order_by("sell").first()
+            #
+            # if best_rate:
+            #     converted_value = value * best_rate.sell
+            #     return HttpResponse(f"{value} {currency_a} = {round(converted_value, 2)} UAH")
 
     form = CalculatorForm
     return render(request, "calculator.html", {"form": form})
