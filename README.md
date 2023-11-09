@@ -34,4 +34,6 @@ celery -A homework_11 worker -l INFO
 python manage.py runserver
 ```
 
-7. Go to http://127.0.0.1:8000/exchange-rates/ in your browser.
+7. Go to
+http://127.0.0.1:8000/exchange-rates/
+http://127.0.0.1:8000/calculator/
