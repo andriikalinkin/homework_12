@@ -1,5 +1,7 @@
+from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 
+from .forms import CalculatorForm
 from .models import Rate
 
 
@@ -20,3 +22,23 @@ def exchange_rates(request):
         ]
     }
     return JsonResponse(response_data)
+
+
+def calculator(request):
+    if request.method == "POST":
+        form = CalculatorForm(request.POST)
+
+        if form.is_valid():
+            value = form.cleaned_data["value"]
+            currency_a = form.cleaned_data["currency_a"]
+
+            best_rate = Rate.objects.filter(
+                currency_a=currency_a
+            ).order_by("sell").first()
+
+            if best_rate:
+                converted_value = value * best_rate.sell
+                return HttpResponse(f"{value} {currency_a} = {round(converted_value, 2)} UAH")
+
+    form = CalculatorForm
+    return render(request, "calculator.html", {"form": form})
