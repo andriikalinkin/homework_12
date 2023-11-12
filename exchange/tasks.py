@@ -18,16 +18,19 @@ def pull_rate():
             provider = provider_class(currency, "UAH")
             provider_rate = provider.get_rate()
 
-            rate, is_created = Rate.objects.get_or_create(
-                vendor=provider.name,
-                currency_a=currency,
-                currency_b="UAH",
-                buy=provider_rate.buy,
-                sell=provider_rate.sell,
-                date=date.today(),
-            )
+            try:
+                rate, is_created = Rate.objects.get_or_create(
+                    vendor=provider.name,
+                    currency_a=currency,
+                    currency_b="UAH",
+                    buy=provider_rate.buy,
+                    sell=provider_rate.sell,
+                    date=date.today(),
+                )
 
-            if is_created:
-                print("New rate has been created:", rate)
-            else:
-                print("The rate is already exists:", rate)
+                if is_created:
+                    print("New rate has been created:", rate)
+                else:
+                    print("The rate is already exists:", rate)
+            except AttributeError:
+                print(f"There is an error in pull_rate for {provider.name}: {currency}")
