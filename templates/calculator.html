@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Calculator</title>
-</head>
-<body>
-    <h1>Currency exchange calculator</h1>
-    <form action="" method="post">
+{% extends "base.html" %}
+{% load bootstrap5 %}
+
+{% block content %}
+    <form action="" method="post" class="form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="OK">
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary" value="OK">
+                Submit
+            </button>
+        {% endbuttons %}
     </form>
-</body>
-</html>
+{% endblock %}

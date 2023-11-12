@@ -46,13 +46,5 @@ def calculator(request):
                     f"{value} {currency_a} = {converted_value} UAH"
                 )
 
-            # best_rate = Rate.objects.filter(
-            #     currency_a=currency_a
-            # ).order_by("sell").first()
-            #
-            # if best_rate:
-            #     converted_value = value * best_rate.sell
-            #     return HttpResponse(f"{value} {currency_a} = {round(converted_value, 2)} UAH")
-
     form = CalculatorForm
     return render(request, "calculator.html", {"form": form})
